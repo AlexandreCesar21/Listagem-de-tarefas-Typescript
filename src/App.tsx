@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
+import { useTheme } from './ThemeContext'
 import './App.css'
 
 interface TodoItem{
@@ -9,6 +10,8 @@ interface TodoItem{
 
 function App() {
  
+  const {theme, toggleTheme} = useTheme()
+  const chaveTarefasMemoria = "tarefas"
   const [todos, setTodos] = useState<TodoItem[]>([])
   const [novoTodo, setNovoTodo] = useState<string>("")
   const [estaCarregado, setEstaCarregado] = useState<boolean>(false)
@@ -46,9 +49,28 @@ function App() {
     return todos.filter(todo => todo.completado)
   }
 
+  useEffect(() => {
+    if(estaCarregado) {
+      localStorage.setItem(chaveTarefasMemoria, JSON.stringify(todos))
+    }
+  }, [todos, estaCarregado])
+
+  useEffect(() => {
+    const tarefasDaMemoria = localStorage.getItem(chaveTarefasMemoria)
+
+    if(tarefasDaMemoria){
+      setTodos(JSON.parse(tarefasDaMemoria))
+    }
+
+    setEstaCarregado(true)
+
+  }, [todos])
+
+
+
   return (
-    <div className='app'>
-        <div className='container'>
+    <div className={`app ${theme}`}>
+        <div className={`container ${theme}`}>
           <h1>Lista de tarefas - {obterTarefasCompletas().length} / {todos.length}</h1>
           <div className='input-container'>
             <input type="text" value={novoTodo} onChange={(e) => setNovoTodo(e.target.value)} />
@@ -65,6 +87,9 @@ function App() {
               ))
             }
           </ol>
+          <button onClick={toggleTheme}>
+            Alterar para  tema { theme === 'light' ? 'Escuro' : 'Claro' }
+          </button>
         </div>
       </div>
   )
