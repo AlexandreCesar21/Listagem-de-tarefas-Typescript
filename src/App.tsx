@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 
 interface TodoItem{
-  id: String,
+  id: string,
   texto: string,
   completado: boolean
 }
@@ -25,6 +25,17 @@ function App() {
     }
   }
 
+  const marcarCompleto = (id: string) => {
+    const todosAtualizados = todos.map((todo) => {
+      if(todo.id === id){
+        return { ...todo, completado: !todo.completado}
+      }
+      return todo
+    })
+    setTodos(todosAtualizados )
+  }
+
+
   return (
     <div className='app'>
         <div className='container'>
@@ -37,7 +48,8 @@ function App() {
             {
               todos.map((todo) => (
                 <li key={todo.id}>
-                  <span>{todo.texto}</span>
+                  <input type="checkbox" checked={todo.completado} onChange={() => marcarCompleto(todo.id)}/>
+                  <span style={{  textDecoration: todo.completado ? 'line-through' : 'none' }}>{todo.texto}</span>
                 </li>
               ))
             }
